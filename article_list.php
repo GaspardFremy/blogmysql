@@ -1,4 +1,4 @@
-<?php require_once 'tools/_db.php';
+<?php require 'tools/_db.php';
 
 if (isset($_GET['id'])){
 $query = $db->prepare('SELECT * FROM category WHERE id = ?');

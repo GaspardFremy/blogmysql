@@ -1,4 +1,3 @@
-<?php require('_db.php'); ?>
 <nav class="col-3 py-2 categories-nav">
 	<b>Catégories :</b>
 	<ul>

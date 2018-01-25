@@ -1,4 +1,4 @@
-<?php require_once 'tools/_db.php'; ?>
+<?php require 'tools/_db.php'; ?>
 <?php
 $query = $db->prepare('SELECT * FROM article WHERE is_published = 1 AND id = ?');
 $query->execute(array($_GET['article_id']));

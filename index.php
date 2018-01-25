@@ -1,4 +1,4 @@
-﻿<?php require_once 'tools/_db.php'; ?>
+﻿<?php require 'tools/_db.php'; ?>
 
 <!DOCTYPE html>
 <html>
@@ -24,14 +24,14 @@
 
 						<!-- les trois derniers articles publiés -->
 							<?php $query = $db -> query('SELECT id,title,created_at,summary FROM article WHERE is_published = 1 LIMIT 0,3') ?>
-							<?php while ($data = $query -> fetch()) : ?>
+							<?php while ($article = $query -> fetch()) : ?>
 									<article class="mb-4">
-											<h2><?php echo $data['title']; ?></h2>
-											<span class="article-date">Créé le <?php echo $data['created_at']; ?></span>
+											<h2><?php echo $article['title']; ?></h2>
+											<span class="article-date">Créé le <?php echo $article['created_at']; ?></span>
 											<div class="article-content">
-												<?php echo $data['summary']; ?>
+												<?php echo $article['summary']; ?>
 											</div>
-											<a href="article.php?article_id=<?php echo $data['id']; ?>">> Lire l'article</a>
+											<a href="article.php?article_id=<?php echo $article['id']; ?>">> Lire l'article</a>
 									</article>
 
 							<?php endwhile; ?>
