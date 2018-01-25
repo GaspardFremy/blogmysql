@@ -1,11 +1,11 @@
-<?php require_once '_db.php'; ?>
+<?php require_once 'tools/_db.php'; ?>
 <?php
-$query2 = $db->prepare('SELECT * FROM article WHERE is_published = 1 AND id = ?');
-$query2->execute(array($_GET['article_id']));
+$query = $db->prepare('SELECT * FROM article WHERE is_published = 1 AND id = ?');
+$query->execute(array($_GET['article_id']));
 // data 2 and query 2 because data and query are used in the partial nav.php
-$data2 = $query2 -> fetch();
+$article = $query -> fetch();
 //si article_id n'est pas défini OU si l'article ayant cet ID n'existe pas
-if(!isset($_GET['article_id']) || !isset($data2[$_GET['article_id']]) ){
+if(!isset($_GET['article_id']) || empty($article) ){
 	header('location:index.php');
 	exit;
 }
@@ -16,7 +16,7 @@ if(!isset($_GET['article_id']) || !isset($data2[$_GET['article_id']]) ){
 <html>
  <head>
 
-	<title><?php echo $data2['title']; ?> - Mon premier blog !</title>
+	<title><?php echo $article['title']; ?> - Mon premier blog !</title>
 
    <?php require 'partials/head_assets.php'; ?>
 
@@ -34,10 +34,10 @@ if(!isset($_GET['article_id']) || !isset($data2[$_GET['article_id']]) ){
 			<main class="col-9">
 				<article>
             <!-- contenu de l'article -->
-            <h1><?php echo $data2['title']; ?></h1>
-					<span class="article-date">Créé le <?php echo $data2['created_at']; ?></span>
+            <h1><?php echo $article['title']; ?></h1>
+					<span class="article-date">Créé le <?php echo $article['created_at']; ?></span>
 					<div class="article-content">
-						<?php echo $data2['content']; ?>
+						<?php echo $article['content']; ?>
 					</div>
 				</article>
 			</main>
@@ -45,7 +45,7 @@ if(!isset($_GET['article_id']) || !isset($data2[$_GET['article_id']]) ){
 		</div>
 
 		<?php require 'partials/footer.php'; ?>
-    <?php $query2 -> closeCursor(); ?>
+    <?php $query -> closeCursor(); ?>
 	</div>
  </body>
 </html>

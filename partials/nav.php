@@ -7,8 +7,8 @@
 
 	 <?php $query = $db -> query('SELECT id,name FROM category') ?>
 
-<?php while($data = $query -> fetch()){
-		echo '<li><a href="article_list.php?id=' . $data['id'] . '">' . $data['name'] . '</a></li>';
+<?php while($nav = $query -> fetch()){
+		echo '<li><a href="article_list.php?id=' . $nav['id'] . '">' . $nav['name'] . '</a></li>';
 } ?>
 		<?php $query->closeCursor(); ?>
 	</ul>

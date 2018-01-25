@@ -1,4 +1,4 @@
-﻿<?php require_once '_db.php'; ?>
+﻿<?php require_once 'tools/_db.php'; ?>
 
 <!DOCTYPE html>
 <html>
