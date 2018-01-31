@@ -25,7 +25,7 @@
 
   <form class="" action="user_form.php" method="post">
       <label for="first">Firstname</label><input class="first" type="text" name="firstname" value=""/><br>
-      <label for="last">Lastname</label><input class "last" type="text" name="lastname" value=""/><br>
+      <label for="last">Lastname</label><input class="last" type="text" name="lastname" value=""/><br>
       <label for="mail">email</label><input class="mail" type="text" name="email" value=""/><br>
       <label for="pass">Password</label><input class="pass" type="password" name="password" value=""/><br>
       <label for="bio">Bio</label><textarea class="bio" name="name" rows="8" cols="10"></textarea><br>
