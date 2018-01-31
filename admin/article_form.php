@@ -21,17 +21,13 @@
         <input type="text" name="title" value="" placeholder="title"></br>
         <label for="ca">category</label>
         <select class="ca" name="cat_id">
-          <?php $categoriesId = []; ?>
-          <?php $categoriesName = []; ?>
+
           <?php $query = $db -> query('SELECT id,name FROM category'); ?>
           <?php while ($cat = $query -> fetch()) : ?>
-              <?php array_push($categoriesName, $cat['name']) ?>
-              <?php array_push($categoriesId, $cat['id']) ?>
+            <option value="<?php echo $cat['id']; ?>"><?php echo $cat['name'] ?></option> 
           <?php endwhile; ?>
           <?php $query->closeCursor() ?>
-          <?php for ($i=0; $i < sizeof($categoriesId) ; $i++) :?>
-            <option value="<?php echo $categoriesId[$i]; ?>"><?php echo $categoriesName[$i]; ?></option> 
-          <?php endfor; ?>
+
         </select></br>
         <label for="content">Content</label>
         <textarea class="content" name="content" rows="8" cols="80"></textarea></br>
