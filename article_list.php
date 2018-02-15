@@ -1,96 +1,116 @@
-<?php require 'tools/_db.php';
+<?php
 
-if (isset($_GET['id'])){
-$query = $db->prepare('SELECT * FROM category WHERE id = ?');
-$query->execute(array($_GET['id']));
+require_once 'tools/_db.php'; 
 
-$category = $query -> fetch();
+if(isset($_GET['category_id']) ){ //si une catégorie est demandée via un id en URL
 
-$query -> closeCursor();
+
+    $query2 = $db ->prepare('SELECT c.*, a.* 
+                                      FROM category c
+                                      JOIN article a
+                                      ON c.id = a.category_id
+                                      WHERE c.id = ? AND a.is_published = 1
+                                      ORDER BY a.created_at DESC');
+
+    $query2 -> execute([
+        $_GET['category_id']
+    ]);
+
+    $articles = $query2 -> fetchAll();
+	
+	if(!$articles){ //Si la catégorie demandé existe bien
+        header('location:index.php');
+        exit;
+	}
+}
+else{ //si PAS de catégorie demandée via un id en URL
+
+	//séléction de tous les articles publiés
+	$query = $db->query('SELECT c.*, a.* 
+                                      FROM category c
+                                      JOIN article a
+                                      ON c.id = a.category_id
+                                      WHERE a.is_published = 1
+                                      ORDER BY a.created_at DESC');
+	$articles = $query->fetchAll();
+	var_dump($articles);
 }
 
-//si l'ID de catégorie n'est pas défini OU si la catégorie ayant cet ID n'existe pas
-if(isset($_GET['id']) && empty($category) ){
-	header('location:index.php');
-	exit;
-}
 ?>
 
 <!DOCTYPE html>
 <html>
  <head>
-
-	<title><?php if(isset($_GET['id'])): ?><?php echo $category['name']; ?><?php else: ?>Tous les articles<?php endif; ?> - Mon premier blog !</title>
-
+	<!-- si on affiche une catégorie, affichage de son nom, sinon affichage de "tous les articles" -->
+	<title><?php if(isset($articles[0]['name'])): ?><?php echo $articles[0]['name']; ?><?php else : ?>Tous les articles<?php endif; ?> - Mon premier blog !</title>
+   
    <?php require 'partials/head_assets.php'; ?>
-
+   
  </head>
  <body class="article-list-body">
 	<div class="container-fluid">
-
+		
 		<?php require 'partials/header.php'; ?>
-
+		
 		<div class="row my-3 article-list-content">
-
+		
 			<?php require('partials/nav.php'); ?>
-
+			
 			<main class="col-9">
 				<section class="all_aricles">
 					<header>
-						<?php if(isset($_GET['id'])): ?>
-						<h1 class="mb-4"><?php echo $category['name']; ?></h1>
-						<?php else: ?>
-						<h1 class="mb-4">Tous les articles :</h1>
-						<?php endif; ?>
+						<!-- si on affiche une catégorie, affichage de son nom, sinon affichage de "tous les articles" -->
+						<h1 class="mb-4"><?php if(isset($articles[0]['name'])): ?><?php echo $articles[0]['name']; ?><?php else : ?>Tous les articles<?php endif; ?> :</h1>
 					</header>
-
-					<?php if(isset($_GET['id'])): ?>
+					
+					<!-- si on affiche une catégorie, affichage d'une div contenant sa description -->
+					<?php if(isset($articles[0]['description'])): ?>
 					<div class="category-description mb-4">
-					<?php echo $category['description']; ?>
+						<?php echo $articles[0]['description']; ?>
 					</div>
 					<?php endif; ?>
-
-					<?php if( isset($_GET['id']) AND $category['id'] == $_GET['id'] ) : ?>
-
-						<?php $query = $db -> prepare('SELECT * FROM article WHERE category_id = ? AND is_published = 1');
-						$query -> execute(array($category['id'])); ?>
-
-						<?php while($article = $query -> fetch()): ?>
-					<article class="mb-4">
-						<h2><?php echo $article['title']; ?></h2>
-						<span class="article-date"><?php echo $article['created_at']; ?></span>
-						<div class="article-content">
-							<?php echo $article['summary']; ?>
-						</div>
-						<a href="article.php?article_id=<?php echo $article['id']; ?>">> Lire l'article</a>
-					</article>
-
-				<?php endwhile; ?>
-
-			<?php elseif (!isset($_GET['id'])): ?>
-				<?php $query = $db -> prepare('SELECT * FROM article WHERE is_published = 1');
-				$query -> execute(); ?>
-
-				<?php while($article = $query -> fetch()): ?>
+					
+					<!-- s'il y a des articles à afficher -->
+					<?php if(!empty($articles)): ?>
+					
+						<?php foreach($articles as $key => $article): ?>
 						<article class="mb-4">
 							<h2><?php echo $article['title']; ?></h2>
-							<span class="article-date"><?php echo $article['created_at']; ?></span>
-							<div class="article-content">
+
+                            <?php $bool=false; ?>
+
+							<!-- Si nous n'affichons pas une catégorie en particulier, je souhaite que le nom de la catégorie de chaque article apparaisse à côté de la date -->
+							<?php for ($i = 0; $i < sizeof($articles)-2; $i++ ): ?>
+                            <?php if(($articles[$i]['name']) != $articles[$i+1]['name']): ?>
+							<?php $bool = true; ?>
+                            <?php else: ?>
+                            <?php $bool = false;?>
+							<?php endif; ?>
+							<?php endfor; ?>
+
+                            <?php if($bool == true): ?>
+                            <b class="article-category">[<?php echo $articles[$key]['name']; ?>]</b>
+                            <?php endif; ?>
+							<!-- affichage des infos de chaque article de la boucle -->
+							<span class="article-date">Créé le <?php echo $article['created_at']; ?></span>
+							<div class="article-summary">
 								<?php echo $article['summary']; ?>
 							</div>
 							<a href="article.php?article_id=<?php echo $article['id']; ?>">> Lire l'article</a>
 						</article>
-
-				<?php endwhile; ?>
-			<?php endif; ?>
-
+						<?php endforeach; ?>
+						
+					<?php else: ?>
+						<!-- s'il n'y a pas d'articles à afficher (catégorie vide ou aucun article publié) -->
+						Aucun article dans cette catégorie...
+					<?php endif; ?>
 				</section>
 			</main>
-				<?php $query -> closeCursor(); ?>
+			
 		</div>
-
+		
 		<?php require 'partials/footer.php'; ?>
-
+		
 	</div>
  </body>
 </html>

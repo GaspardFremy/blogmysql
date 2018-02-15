@@ -1,11 +1,29 @@
-<?php require 'tools/_db.php'; ?>
-<?php
-$query = $db->prepare('SELECT * FROM article WHERE is_published = 1 AND id = ?');
-$query->execute(array($_GET['article_id']));
-// data 2 and query 2 because data and query are used in the partial nav.php
-$article = $query -> fetch();
-//si article_id n'est pas défini OU si l'article ayant cet ID n'existe pas
-if(!isset($_GET['article_id']) || empty($article) ){
+<?php 
+
+require_once 'tools/_db.php'; 
+
+if(isset($_GET['article_id'] ) ){
+	
+	//selection de l'article dont l'ID est envoyé en paramètre GET
+	$query = $db->prepare('SELECT a.*, c.name AS category_name 
+                                      FROM article a
+                                      JOIN category c
+                                      ON a.category_id = c.id
+                                      WHERE a.id = ?
+                                      AND is_published = 1');
+	$query->execute( array( $_GET['article_id'] ) );
+
+
+	$article = $query->fetch();
+
+	//si pas d'article trouvé dans la base de données, renvoyer l'utilisateur vers la page index
+	if(!$article){
+		header('location:index.php');
+		exit;
+	}
+
+}
+else{ //si article_id n'est pas envoyé en URL, renvoyer l'utilisateur vers la page index
 	header('location:index.php');
 	exit;
 }
@@ -15,37 +33,36 @@ if(!isset($_GET['article_id']) || empty($article) ){
 <!DOCTYPE html>
 <html>
  <head>
-
+ 
 	<title><?php echo $article['title']; ?> - Mon premier blog !</title>
-
+   
    <?php require 'partials/head_assets.php'; ?>
-
+   
  </head>
- <body class="article-body">
-	<div class="container-fluid">
+<body class="article-body">
+<div class="container-fluid">
 
-		<?php require 'partials/header.php'; ?>
+    <?php require 'partials/header.php'; ?>
 
-		<div class="row my-3 article-content">
+    <div class="row my-3 article-content">
 
-			<?php require 'partials/nav.php'; ?>
+        <?php require 'partials/nav.php'; ?>
 
+        <main class="col-9">
+            <article>
+                <h1><?php echo $article['title']; ?></h1>
+                <b class="article-category">[<?php echo $article['category_name']; ?>]</b>
+                <span class="article-date">Créé le <?php echo $article['created_at']; ?></span>
+                <div class="article-content">
+                    <?php echo $article['content']; ?>
+                </div>
+            </article>
+        </main>
 
-			<main class="col-9">
-				<article>
-            <!-- contenu de l'article -->
-            <h1><?php echo $article['title']; ?></h1>
-					<span class="article-date">Créé le <?php echo $article['created_at']; ?></span>
-					<div class="article-content">
-						<?php echo $article['content']; ?>
-					</div>
-				</article>
-			</main>
+    </div>
 
-		</div>
+    <?php require 'partials/footer.php'; ?>
 
-		<?php require 'partials/footer.php'; ?>
-    <?php $query -> closeCursor(); ?>
-	</div>
- </body>
+</div>
+</body>
 </html>
