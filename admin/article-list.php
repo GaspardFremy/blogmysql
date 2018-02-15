@@ -1,6 +1,9 @@
 <?php
 
 require_once '../tools/_db.php';
+if($_SESSION['is_admin'] != 1){
+    header('location: login-register.php');
+}
 
 //supprimer l'article dont l'ID est envoyé en paramètre URL
 if(isset($_GET['article_id']) && isset($_GET['action']) && $_GET['action'] == 'delete'){

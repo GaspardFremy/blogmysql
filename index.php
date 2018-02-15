@@ -1,4 +1,9 @@
-<?php require_once 'tools/_db.php'; ?>
+<?php require_once 'tools/_db.php';
+    if(isset($_GET['logout']) && isset($_SESSION['user'])){
+        session_destroy();
+        header('location: index.php');
+}
+?>
 
 <!DOCTYPE html>
 <html>

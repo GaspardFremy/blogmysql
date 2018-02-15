@@ -1,6 +1,10 @@
 <?php
 require_once '../tools/_db.php';
 
+if($_SESSION['is_admin'] != 1){
+    header('location: login-register.php');
+}
+
 //Si $_POST['save'] existe, cela signifie que c'est un ajout d'utilisateur
 if(isset($_POST['save'])){
     $query = $db->prepare('INSERT INTO user (first_name, last_name, password, email, is_admin, bio) VALUES (?, ?, ?, ?, ?, ?)');

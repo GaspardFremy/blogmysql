@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 try{
 	$db = new PDO('mysql:host=localhost;dbname=blog;charset=utf8', 'root', 'root', array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
